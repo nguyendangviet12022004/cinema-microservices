@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: database
+  labels: 
+    {{- include "cm.labels" . | nindent 4 }} 
+    app.kubernetes.io/component: {{ include "cm.fullname" .}}-cinema-db-sts
+  name:  {{ include "cm.fullname" .}}-cinema-db-sts
+spec:
+  selector:
+    matchLabels:
+      {{- include "cm.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: {{ include "cm.fullname" .}}-cinema-db-pod
+  minReadySeconds: 10 
+  template:
+    metadata:
+      labels:
+        {{- include "cm.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: {{ include "cm.fullname" .}}-cinema-db-pod
+    spec:
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: {{ include "cm.fullname" .}}-pull-image-account-service
+      containers:
+        - name: {{ include "cm.fullname" .}}-cinema-db-pod
+          image: {{ .Values.image.db.repository }}:{{ .Values.image.db.tag | default "latest"}}
+          ports:
+            - containerPort: 5432
+              name: cinema-db-vl
+          envFrom:
+            - secretRef:
+                name: {{ include "cm.fullname" .}}-cinema-db-secret
+          volumeMounts:
+            - name: cinema-db-vl
+              mountPath: /var/lib/postgresql
+  volumeClaimTemplates:
+    - metadata:
+        name: cinema-db-vl
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

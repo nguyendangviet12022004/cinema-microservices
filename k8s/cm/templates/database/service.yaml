@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cm.fullname" .}}-cinema-db-service
+  namespace: database
+  labels:
+    {{- include "cm.labels" . | nindent 4 }}
+    app.kubernetes.io/component: {{ include "cm.fullname" .}}-cinema-db-service
+spec:
+  selector:
+    {{- include "cm.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: {{ include "cm.fullname" .}}-cinema-db-pod
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432

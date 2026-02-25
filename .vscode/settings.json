@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "k8s/cm/templates/**/*.yaml": "helm-template",
+        "k8s/cm/templates/**/*.tpl": "helm-template"
+    },
+    "yaml.validate": false
+}
