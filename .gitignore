@@ -2,3 +2,4 @@
 secret.yaml
 config.yaml
 k8s/cm/templates/auth/
+cinema/config/
